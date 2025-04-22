@@ -62,7 +62,6 @@ def main(start: int, end: int, setup: dict):
             })
             page = driver.new_page()
             try:
-                print(f'Обработка артикула {articles[idx].value}')
                 page.goto(f'https://www.bricklink.com/v2/catalog/catalogitem.page?M={articles[idx].value}#T=P')
                 page.wait_for_selector('table.pcipgMainTable')
                 table = page.query_selector('#_idPGContents > table > tbody > tr:nth-child(3) > td:nth-child(4)')
@@ -76,6 +75,12 @@ def main(start: int, end: int, setup: dict):
                     series_val = page.query_selector('#id_divBlock_Main > table:nth-child(1) > tbody > tr:nth-child(3) > td > div:nth-child(1) > table > tbody > tr > td > a').inner_text().split()[0]
                 elif series_val == 'Town':
                     series_val = 'City'
+                elif series_val == 'Space':
+                    try:
+                        if catalog_line[3].inner_text() == 'Galaxy Squad':
+                            series_val = 'Galaxy Squad'
+                    except:
+                        series_val = 'Space'
             except Exception as e:
                 print(f'Ошибка при работе с артикулом {articles[idx].value} (https://www.bricklink.com/v2/catalog/catalogitem.page?M={articles[idx].value}#T=P')
                 qty_res.append([None])
@@ -83,7 +88,7 @@ def main(start: int, end: int, setup: dict):
                 name_res.append([None])
                 series_res.append([None])
             else:
-                print(series_val, name_val, prc_val, qty_val)
+                print(f'Обработка артикула {articles[idx].value}: {series_val}, {name_val}, {prc_val}, {qty_val}')
                 qty_res.append([qty_val])
                 price_res.append([prc_val])
                 name_res.append([name_val])
@@ -99,4 +104,4 @@ def main(start: int, end: int, setup: dict):
 
 if __name__ == '__main__':
     from Setup.setup import setup
-    main(6, 7, setup)
+    main(3, 1_000, setup)
